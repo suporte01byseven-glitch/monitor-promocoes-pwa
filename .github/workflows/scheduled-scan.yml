@@ -1,0 +1,31 @@
+name: Scheduled promotion scan
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate configuration
+        env:
+          APP_CRON_URL: ${{ vars.APP_CRON_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$APP_CRON_URL" || { echo 'Configure a variavel APP_CRON_URL em Settings > Secrets and variables > Actions.'; exit 1; }
+          test -n "$CRON_SECRET" || { echo 'Configure o secret CRON_SECRET em Settings > Secrets and variables > Actions.'; exit 1; }
+          case "$APP_CRON_URL" in https://*/api/cron/scan) ;; *) echo 'APP_CRON_URL deve ser HTTPS e terminar em /api/cron/scan.'; exit 1 ;; esac
+      - name: Trigger due monitorings
+        env:
+          APP_CRON_URL: ${{ vars.APP_CRON_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail --silent --show-error \
+            --retry 2 --retry-delay 3 --max-time 55 \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            "$APP_CRON_URL"
