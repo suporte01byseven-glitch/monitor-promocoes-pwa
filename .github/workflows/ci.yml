@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Validate Python syntax
+        run: python -m py_compile index.py server.py tests/test_server.py tests/test_api_logic.py
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Validate JavaScript syntax
+        run: |
+          node --check public/app.js
+          node --check public/pwa.js
+          node --check public/sw.js
+      - name: Validate deployment and PWA manifests
+        run: |
+          python -c "import json; json.load(open('vercel.json')); json.load(open('public/manifest.webmanifest'))"
