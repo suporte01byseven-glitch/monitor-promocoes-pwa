@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "Monitor de Promoções",
+  "short_name": "Promoções",
+  "description": "Acompanhe preços e receba alertas de promoções.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1815",
+  "theme_color": "#0f1815",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
